@@ -70,27 +70,29 @@ Task_container::Task_container(std::vector<std::shared_ptr<Task>> tasks, bool co
 
 std::string Task_container::type(bool enable_result_format) const
 {
-	std::array<std::string, 7> types;
+	std::array<std::string, 8> types;
 	if (enable_result_format)
-		types = {{"vm started", "vm stopped", "vm migrated", "vm repinned", "vm suspended", "vm resumed", "quit"}};
+		types = {{"vm started", "virtual cluster started", "vm stopped", "vm migrated", "vm repinned", "vm suspended", "vm resumed", "quit"}};
 	else
-		types = {{"start vm", "stop vm", "migrate vm", "repin vm", "suspend vm", "resume vm", "quit"}};
+		types = {{"start vm", "start virtual cluster", "stop vm", "migrate vm", "repin vm", "suspend vm", "resume vm", "quit"}};
 	if (tasks.empty())
 		throw std::runtime_error("No subtasks available to get type.");
 	else if (std::dynamic_pointer_cast<Start>(tasks.front()))
 		return types[0];
-	else if (std::dynamic_pointer_cast<Stop>(tasks.front()))
+	else if (std::dynamic_pointer_cast<Start_virt_cluster>(tasks.front()))
 		return types[1];
-	else if (std::dynamic_pointer_cast<Migrate>(tasks.front()))
+	else if (std::dynamic_pointer_cast<Stop>(tasks.front()))
 		return types[2];
-	else if (std::dynamic_pointer_cast<Repin>(tasks.front()))
+	else if (std::dynamic_pointer_cast<Migrate>(tasks.front()))
 		return types[3];
-	else if (std::dynamic_pointer_cast<Suspend>(tasks.front()))
+	else if (std::dynamic_pointer_cast<Repin>(tasks.front()))
 		return types[4];
-	else if (std::dynamic_pointer_cast<Resume>(tasks.front()))
+	else if (std::dynamic_pointer_cast<Suspend>(tasks.front()))
 		return types[5];
-	else if (std::dynamic_pointer_cast<Quit>(tasks.front()))
+	else if (std::dynamic_pointer_cast<Resume>(tasks.front()))
 		return types[6];
+	else if (std::dynamic_pointer_cast<Quit>(tasks.front()))
+		return types[7];
 	else
 		throw std::runtime_error("Unknown type of Task.");
 
@@ -276,6 +278,40 @@ void Start::load(const YAML::Node &node)
 	ivshmem.load(node);
 	transient.load(node);
 	vcpu_map.load(node);
+}
+
+//
+// Start_virt_cluster implementation
+//
+
+Start_virt_cluster::Start_virt_cluster() :
+	base_name("base-name"),
+	count("count"),
+	memory("memory"),
+	ivshmem("ivshmem")
+{
+}
+
+YAML::Node Start_virt_cluster::emit() const
+{
+	YAML::Node node = Task::emit();
+	node["base-name"] = base_name;
+	merge_node(node, count.emit());
+	merge_node(node, memory.emit());
+	merge_node(node, ivshmem.emit());
+	if (!pci_ids.empty())
+		node["pci-ids"] = pci_ids;
+	return node;
+}
+
+void Start_virt_cluster::load(const YAML::Node &node)
+{
+	Task::load(node);
+	fast::load(base_name, node["base-name"]);
+	count.load(node);
+	memory.load(node);
+	fast::load(pci_ids, node["pci-ids"], std::vector<PCI_id>());
+	ivshmem.load(node);
 }
 
 //

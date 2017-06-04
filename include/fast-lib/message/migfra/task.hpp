@@ -127,6 +127,24 @@ struct Start :
 };
 
 /**
+ * \brief Task to start a set of domains based on a goalden image
+ */
+struct Start_virt_cluster :
+	public Task
+{
+	Start_virt_cluster();
+
+	YAML::Node emit() const override;
+	void load(const YAML::Node &node) override;
+
+	std::string base_name;
+	Optional<unsigned int> count;
+	Optional<unsigned long> memory;
+	std::vector<PCI_id> pci_ids;
+	Optional<Device_ivshmem> ivshmem;
+};
+
+/**
  * \brief Task to stop a single virtual machine.
  */
 struct Stop :
@@ -290,6 +308,7 @@ struct Quit :
 YAML_CONVERT_IMPL(fast::msg::migfra::Task)
 YAML_CONVERT_IMPL(fast::msg::migfra::Task_container)
 YAML_CONVERT_IMPL(fast::msg::migfra::Start)
+YAML_CONVERT_IMPL(fast::msg::migfra::Start_virt_cluster)
 YAML_CONVERT_IMPL(fast::msg::migfra::Stop)
 YAML_CONVERT_IMPL(fast::msg::migfra::Swap_with)
 YAML_CONVERT_IMPL(fast::msg::migfra::Migrate)
