@@ -246,7 +246,13 @@ MERGE_STATIC_LIBRARIES(${FASTLIB} ALL "${LIBS}")
 
 # As librt should always be available it is linked dynamically and therefore has to be linked in applications
 # that use fast-lib as well.
-target_link_libraries(${FASTLIB} -lrt)
+if (UNIX AND NOT APPLE)
+	find_library(LIBRT rt)
+	if (LIBRT)
+		target_link_libraries(${FASTLIB} -lrt)
+	endif (LIBRT)
+endif (UNIX AND NOT APPLE)
+
 
 # Install
 install(TARGETS "${FASTLIB}"
