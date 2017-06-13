@@ -307,7 +307,7 @@ YAML::Node Start_virt_cluster::emit() const
 	merge_node(node, memory.emit());
 	merge_node(node, ivshmem.emit());
 	if (!dhcp_info.empty())
-		node["dhcp-infos"] = dhcp_info;
+		node["dhcp-info"] = dhcp_info;
 	if (!pci_ids.empty())
 		node["pci-ids"] = pci_ids;
 	return node;
