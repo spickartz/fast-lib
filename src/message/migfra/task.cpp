@@ -133,9 +133,9 @@ static std::vector<std::shared_ptr<Task>> load_start_task(const YAML::Node &node
 
 static std::vector<std::shared_ptr<Task>> load_start_virt_cluster_task(const YAML::Node &node)
 {
-	std::shared_ptr<Start_virt_cluster> start_virt_cluster;
-	fast::load(start_virt_cluster, node);
-	return std::vector<std::shared_ptr<Task>>(1, start_virt_cluster);
+	std::shared_ptr<Start_virt_cluster> start_virt_cluster_task;
+	fast::load(start_virt_cluster_task, node);
+	return std::vector<std::shared_ptr<Task>>(1, start_virt_cluster_task);
 }
 
 static std::vector<std::shared_ptr<Task>> load_stop_task(const YAML::Node &node)
