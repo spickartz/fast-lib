@@ -88,8 +88,8 @@ struct Task_tester :
 		(void) test_name;
 		Start_virt_cluster start_virt_cluster1;
 		start_virt_cluster1.base_name = "vm-base";
-		start_virt_cluster1.count = 3;
 		start_virt_cluster1.memory = 8 * 1024 * 1024;
+		start_virt_cluster1.dhcp_info.emplace_back("dummy-node", "52:54:00:d4:02:e6"); // lookup emplace_back params
 		start_virt_cluster1.pci_ids.emplace_back(0x15b3, 0x1004); // lookup emplace_back params
 		start_virt_cluster1.ivshmem = fast::msg::migfra::Device_ivshmem();
 		start_virt_cluster1.ivshmem->id = "test";
@@ -99,12 +99,10 @@ struct Task_tester :
 		auto buf = start_virt_cluster1.to_string();
 		std::cout << "Serialized string: " << buf << std::endl;
 		start_virt_cluster2.from_string(buf);
-		fructose_assert(start_virt_cluster2.count);
 		fructose_assert(start_virt_cluster2.memory);
 		fructose_assert(start_virt_cluster2.ivshmem);
 		fructose_assert_eq(start_virt_cluster2.pci_ids.size(), 1);
 		fructose_assert(start_virt_cluster2.base_name == start_virt_cluster1.base_name);
-		fructose_assert(start_virt_cluster2.count == start_virt_cluster1.count);
 		fructose_assert(start_virt_cluster2.memory == start_virt_cluster1.memory);
 		fructose_assert(start_virt_cluster2.ivshmem->id == start_virt_cluster1.ivshmem->id);
 		fructose_assert(start_virt_cluster2.ivshmem->size == start_virt_cluster1.ivshmem->size);
