@@ -286,7 +286,6 @@ void Start::load(const YAML::Node &node)
 
 Start_virt_cluster::Start_virt_cluster() :
 	base_name("base-name"),
-	count("count"),
 	memory("memory"),
 	ivshmem("ivshmem")
 {
@@ -296,9 +295,10 @@ YAML::Node Start_virt_cluster::emit() const
 {
 	YAML::Node node = Task::emit();
 	node["base-name"] = base_name;
-	merge_node(node, count.emit());
 	merge_node(node, memory.emit());
 	merge_node(node, ivshmem.emit());
+	if (!dhcp_info.empty())
+		node["dhcp-infos"] = dhcp_info;
 	if (!pci_ids.empty())
 		node["pci-ids"] = pci_ids;
 	return node;
@@ -308,8 +308,8 @@ void Start_virt_cluster::load(const YAML::Node &node)
 {
 	Task::load(node);
 	fast::load(base_name, node["base-name"]);
-	count.load(node);
 	memory.load(node);
+	fast::load(dhcp_info, node["dhcp-info"], std::vector<DHCP_info>());
 	fast::load(pci_ids, node["pci-ids"], std::vector<PCI_id>());
 	ivshmem.load(node);
 }

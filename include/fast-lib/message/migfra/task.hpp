@@ -11,6 +11,7 @@
 
 #include <fast-lib/message/migfra/ivshmem.hpp>
 #include <fast-lib/message/migfra/pci_id.hpp>
+#include <fast-lib/message/migfra/dhcp_info.hpp>
 #include <fast-lib/message/migfra/time_measurement.hpp>
 #include <fast-lib/optional.hpp>
 #include <fast-lib/serializable.hpp>
@@ -138,7 +139,7 @@ struct Start_virt_cluster :
 	void load(const YAML::Node &node) override;
 
 	std::string base_name;
-	Optional<unsigned int> count;
+	std::vector<DHCP_info> dhcp_info;
 	Optional<unsigned long> memory;
 	std::vector<PCI_id> pci_ids;
 	Optional<Device_ivshmem> ivshmem;
