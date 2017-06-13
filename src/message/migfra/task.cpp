@@ -131,6 +131,13 @@ static std::vector<std::shared_ptr<Task>> load_start_task(const YAML::Node &node
 	return std::vector<std::shared_ptr<Task>>(tasks.begin(), tasks.end());
 }
 
+static std::vector<std::shared_ptr<Task>> load_start_virt_cluster_task(const YAML::Node &node)
+{
+	std::shared_ptr<Start_virt_cluster> start_virt_cluster;
+	fast::load(start_virt_cluster, node);
+	return std::vector<std::shared_ptr<Task>>(1, start_virt_cluster);
+}
+
 static std::vector<std::shared_ptr<Task>> load_stop_task(const YAML::Node &node)
 {
 	std::vector<std::shared_ptr<Stop>> tasks;
@@ -183,6 +190,8 @@ void Task_container::load(const YAML::Node &node)
 	}
 	if (type == "start vm") {
 		tasks = load_start_task(node);
+	} else if (type == "start virtual cluster") {
+		tasks = load_start_virt_cluster_task(node);
 	} else if (type == "stop vm") {
 		tasks = load_stop_task(node);
 	} else if (type == "migrate vm") {
