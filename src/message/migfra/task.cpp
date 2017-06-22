@@ -104,7 +104,7 @@ YAML::Node Task_container::emit() const
 	YAML::Node node;
 	auto type_str = type();
 	node["task"] = type_str;
-	if (type_str == "migrate vm") {
+	if ((type_str == "migrate vm") || (type_str == "start virtual cluster")) {
 		merge_node(node, tasks.front()->emit());
 	} else if (type_str == "repin vm") {
 		merge_node(node, tasks.front()->emit());
@@ -129,6 +129,13 @@ static std::vector<std::shared_ptr<Task>> load_start_task(const YAML::Node &node
 	std::vector<std::shared_ptr<Start>> tasks;
 	fast::load(tasks, node["vm-configurations"]);
 	return std::vector<std::shared_ptr<Task>>(tasks.begin(), tasks.end());
+}
+
+static std::vector<std::shared_ptr<Task>> load_start_virt_cluster_task(const YAML::Node &node)
+{
+	std::shared_ptr<Start_virt_cluster> start_virt_cluster_task;
+	fast::load(start_virt_cluster_task, node);
+	return std::vector<std::shared_ptr<Task>>(1, start_virt_cluster_task);
 }
 
 static std::vector<std::shared_ptr<Task>> load_stop_task(const YAML::Node &node)
@@ -183,6 +190,8 @@ void Task_container::load(const YAML::Node &node)
 	}
 	if (type == "start vm") {
 		tasks = load_start_task(node);
+	} else if (type == "start virtual cluster") {
+		tasks = load_start_virt_cluster_task(node);
 	} else if (type == "stop vm") {
 		tasks = load_stop_task(node);
 	} else if (type == "migrate vm") {
@@ -298,7 +307,7 @@ YAML::Node Start_virt_cluster::emit() const
 	merge_node(node, memory.emit());
 	merge_node(node, ivshmem.emit());
 	if (!dhcp_info.empty())
-		node["dhcp-infos"] = dhcp_info;
+		node["dhcp-info"] = dhcp_info;
 	if (!pci_ids.empty())
 		node["pci-ids"] = pci_ids;
 	return node;

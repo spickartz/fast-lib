@@ -34,14 +34,14 @@ YAML::Node DHCP_info::emit() const
 {
 	YAML::Node node;
 	node["hostname"] = hostname;
-	node["MAC"] = mac;
+	node["mac"] = mac;
 	return node;
 }
 
 void DHCP_info::load(const YAML::Node &node)
 {
 	fast::load(hostname, node["hostname"]);
-	fast::load(mac, node["MAC"]);
+	fast::load(mac, node["mac"]);
 }
 
 std::ostream & operator<<(std::ostream &os, const DHCP_info &rhs)
