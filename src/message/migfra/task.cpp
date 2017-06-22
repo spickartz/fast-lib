@@ -104,7 +104,7 @@ YAML::Node Task_container::emit() const
 	YAML::Node node;
 	auto type_str = type();
 	node["task"] = type_str;
-	if (type_str == "migrate vm") {
+	if ((type_str == "migrate vm") || (type_str == "start virtual cluster")) {
 		merge_node(node, tasks.front()->emit());
 	} else if (type_str == "repin vm") {
 		merge_node(node, tasks.front()->emit());
