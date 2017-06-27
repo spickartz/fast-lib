@@ -211,45 +211,63 @@ void Task_container::load(const YAML::Node &node)
 	id.load(node);
 }
 
+
+Generic_start_task::Generic_start_task() :
+	memory("memory"),
+	ivshmem("ivshmem")
+{
+}
+
+Generic_start_task::Generic_start_task(std::vector<PCI_id> pci_ids, bool concurrent_execution, bool time_measurement) :
+	Task::Task(concurrent_execution, time_measurement),
+	memory("memory"),
+	pci_ids(std::move(pci_ids)),
+	ivshmem("ivshmem")
+{
+}
+
+Generic_start_task::Generic_start_task(unsigned long memory, std::vector<PCI_id> pci_ids, bool concurrent_execution, bool time_measurement) :
+	Task::Task(concurrent_execution, time_measurement),
+	memory("memory", memory),
+	pci_ids(std::move(pci_ids)),
+	ivshmem("ivshmem")
+{
+}
+
+Generic_start_task::~Generic_start_task() {}
+
 //
 // Start implementation
 //
 
 Start::Start() :
-	vm_name("vm-name"),
-	vcpus("vcpus"),
-	memory("memory"),
-	memnode_map("memnode-map"),
-	xml("xml"),
-	ivshmem("ivshmem"),
-	transient("transient"),
-	vcpu_map("vcpu-map")
+       vm_name("vm-name"),
+       vcpus("vcpus"),
+       memnode_map("memnode-map"),
+       xml("xml"),
+       transient("transient"),
+       vcpu_map("vcpu-map")
 {
+	Generic_start_task::Generic_start_task();
 }
 
 Start::Start(std::string vm_name, unsigned int vcpus, unsigned long memory, std::vector<PCI_id> pci_ids, bool concurrent_execution) :
-	Task::Task(concurrent_execution),
+	Generic_start_task::Generic_start_task(memory, pci_ids, concurrent_execution),
 	vm_name("vm-name", std::move(vm_name)),
 	vcpus("vcpus", vcpus),
-	memory("memory", memory),
 	memnode_map("memnode-map"),
-	pci_ids(std::move(pci_ids)),
 	xml("xml"),
-	ivshmem("ivshmem"),
 	transient("transient"),
 	vcpu_map("vcpu-map")
 {
 }
 
 Start::Start(std::string xml, std::vector<PCI_id> pci_ids, bool concurrent_execution) :
-	Task::Task(concurrent_execution),
+	Generic_start_task::Generic_start_task(pci_ids, concurrent_execution),
 	vm_name("vm-name"),
 	vcpus("vcpus"),
-	memory("memory"),
 	memnode_map("memnode-map"),
-	pci_ids(std::move(pci_ids)),
 	xml("xml", xml),
-	ivshmem("ivshmem"),
 	transient("transient"),
 	vcpu_map("vcpu-map")
 {
@@ -294,10 +312,9 @@ void Start::load(const YAML::Node &node)
 //
 
 Start_virt_cluster::Start_virt_cluster() :
-	base_name("base-name"),
-	memory("memory"),
-	ivshmem("ivshmem")
+	base_name("base-name")
 {
+	Generic_start_task::Generic_start_task();
 }
 
 YAML::Node Start_virt_cluster::emit() const
