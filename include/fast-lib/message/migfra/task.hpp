@@ -94,27 +94,12 @@ struct Task_container :
 	std::string type(bool enable_result_format = false) const;
 };
 
-
-struct Generic_start_task :
-	public Task
-{
-	Generic_start_task();
-	Generic_start_task(std::vector<PCI_id> pci_ids, bool concurrent_execution, bool time_measurement = false);
-	Generic_start_task(unsigned long memory, std::vector<PCI_id> pci_ids, bool concurrent_execution, bool time_measurement = false);
-
-	~Generic_start_task();
-
-	Optional<unsigned long> memory;
-	std::vector<PCI_id> pci_ids;
-	Optional<Device_ivshmem> ivshmem;
-};
-
 /**
  * \brief Task to start a single virtual machine.
  * TODO: vm_name should be optional
  */
 struct Start :
-	public Generic_start_task
+	public Task
 {
 	Start();
 	/**
@@ -133,8 +118,11 @@ struct Start :
 
 	Optional<std::string> vm_name;
 	Optional<unsigned int> vcpus;
+	Optional<unsigned long> memory;
 	Optional<std::vector<std::vector<unsigned int>>> memnode_map;
+	std::vector<PCI_id> pci_ids;
 	Optional<std::string> xml;
+	Optional<Device_ivshmem> ivshmem;
 	Optional<bool> transient;
 	Optional<std::vector<std::vector<unsigned int>>> vcpu_map;
 };
@@ -143,7 +131,7 @@ struct Start :
  * \brief Task to start a set of domains based on a goalden image
  */
 struct Start_virt_cluster :
-	public Generic_start_task
+	public Task
 {
 	Start_virt_cluster();
 
@@ -152,6 +140,9 @@ struct Start_virt_cluster :
 
 	std::string base_name;
 	std::vector<DHCP_info> dhcp_info;
+	Optional<unsigned long> memory;
+	std::vector<PCI_id> pci_ids;
+	Optional<Device_ivshmem> ivshmem;
 };
 
 /**
